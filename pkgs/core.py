@@ -18,6 +18,12 @@ regex = {
 }
 
 
+mathmode = {
+    "i": {"opening": r"\(", "closing": r"\)"},
+    "d": {"opening": r"\[", "closing": r"\]"},
+}
+
+
 def parser(file: str):
     try:
         with open(file, "r") as f:
@@ -28,9 +34,15 @@ def parser(file: str):
                 "i": regex["math"]["i"][1].findall(g),
                 "d": regex["math"]["d"][1].findall(g),
             }
-            for eq_t in ["i", "d"]:
-                for eq in E[eq_t]:
-                    print(re.sub(r"\s+", r" ", eq))
+            with open("brew/parsed.tex", "w") as h:
+                for eq_t in ["i", "d"]:
+                    for eq in E[eq_t]:
+                        formatted_eq = "{}\n\t{}\n{}".format(
+                            mathmode[eq_t]["opening"],
+                            re.sub(r"\s+", r" ", eq),
+                            mathmode[eq_t]["closing"],
+                        )
+                        print(formatted_eq, file=h)
         return None
     except IOError:
         print("File does not exist.")
